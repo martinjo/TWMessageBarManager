@@ -775,7 +775,7 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
     switch (type)
     {
         case TWMessageBarMessageTypeError:
-            backgroundColor = [UIColor flatRedColor];
+            backgroundColor = UIColorFromRGB(0xE74C3C);
             break;
         case TWMessageBarMessageTypeSuccess:
             backgroundColor = [UIColor colorWithRed:170./255. green:199./255. blue:102./255. alpha:1.0];

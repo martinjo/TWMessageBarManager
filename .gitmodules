@@ -1,3 +1,6 @@
 [submodule "Classes/ASProgressPopUpView"]
 	path = Classes/ASProgressPopUpView
 	url = https://martinjo@github.com/martinjo/ASProgressPopUpView.git
+[submodule "Classes/PRTween"]
+	path = Classes/PRTween
+	url = https://martinjo@github.com/martinjo/PRTween.git

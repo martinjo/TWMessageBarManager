@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 #import "ASProgressPopUpView.h"
-#import "UIColor+MLPFlatColors.h"
 #import "PRTween.h"
 #import "PerformBlockAfterDelayExtension.h"
 
@@ -22,6 +21,11 @@ typedef enum {
 } TWMessageBarMessageType;
 
 @protocol TWMessageBarStyleSheet <NSObject>
+
+#define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 \
+green:((float)((rgbValue & 0xFF00) >> 8))/255.0 \
+blue:((float)(rgbValue & 0xFF))/255.0 \
+alpha:1.0]
 
 /**
  *  Background color of message view.
