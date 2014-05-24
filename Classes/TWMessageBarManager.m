@@ -67,8 +67,13 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
 
 @property (nonatomic, weak) id <TWMessageViewDelegate> delegate;
 
+@property (readwrite) ASProgressPopUpView* progressBar;
+
+@property (nonatomic) PRTweenOperation* tweenOperation;
+
 // Initializers
 - (id)initWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type;
+- (id)initWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type showProgress:(BOOL)progress;
 
 // Getters
 - (CGFloat)height;
@@ -132,7 +137,7 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
 - (TWMessageBarViewController *)messageBarViewController;
 
 // Master presetation
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback;
+//- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback;
 
 @end
 
@@ -178,51 +183,62 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
 
 #pragma mark - Public
 
+
 - (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type
 {
-    [self showMessageWithTitle:title description:description type:type duration:[TWMessageBarManager durationForMessageType:type] callback:nil];
+    [self showMessageWithTitle:title description:description type:type duration:[TWMessageBarManager durationForMessageType:type] showProgress:NO callback:nil];
+}
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type showProgress:(BOOL)progress
+{
+    [self showMessageWithTitle:title description:description type:type duration: progress ? 0 :  [TWMessageBarManager durationForMessageType:type] showProgress:progress callback:nil];
 }
 
 - (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type callback:(void (^)())callback
 {
-    [self showMessageWithTitle:title description:description type:type duration:[TWMessageBarManager durationForMessageType:type] callback:callback];
+    [self showMessageWithTitle:title description:description type:type duration:[TWMessageBarManager durationForMessageType:type] showProgress:NO callback:callback];
 }
 
 - (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration
 {
-    [self showMessageWithTitle:title description:description type:type duration:duration callback:nil];
+    [self showMessageWithTitle:title description:description type:type duration:duration showProgress:NO callback:nil];
 }
 
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration callback:(void (^)())callback
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration showProgress:(BOOL)progress
 {
-    [self showMessageWithTitle:title description:description type:type duration:duration statusBarStyle:UIStatusBarStyleDefault callback:callback];
+    [self showMessageWithTitle:title description:description type:type duration:duration showProgress:progress callback:nil];
 }
 
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration showProgress:(BOOL)progress callback:(void (^)())callback
 {
-    [self showMessageWithTitle:title description:description type:type duration:kTWMessageBarManagerDisplayDelay statusBarStyle:statusBarStyle callback:callback];
+    [self showMessageWithTitle:title description:description type:type duration:duration statusBarStyle:UIStatusBarStyleDefault showProgress:progress callback:callback];
 }
 
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarStyle:(UIStatusBarStyle)statusBarStyle showProgress:(BOOL)progress callback:(void (^)())callback
 {
-    [self showMessageWithTitle:title description:description type:type duration:duration statusBarHidden:NO statusBarStyle:statusBarStyle callback:callback];
+    [self showMessageWithTitle:title description:description type:type duration:kTWMessageBarManagerDisplayDelay statusBarStyle:statusBarStyle showProgress:progress callback:callback];
 }
 
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarHidden:(BOOL)statusBarHidden callback:(void (^)())callback
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarStyle:(UIStatusBarStyle)statusBarStyle showProgress:(BOOL)progress callback:(void (^)())callback
 {
-    [self showMessageWithTitle:title description:description type:type duration:[TWMessageBarManager durationForMessageType:type] statusBarHidden:statusBarHidden statusBarStyle:UIStatusBarStyleDefault callback:callback];
+    [self showMessageWithTitle:title description:description type:type duration:duration statusBarHidden:NO statusBarStyle:statusBarStyle showProgress:progress callback:callback];
 }
 
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden callback:(void (^)())callback
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarHidden:(BOOL)statusBarHidden showProgress:(BOOL)progress callback:(void (^)())callback
 {
-    [self showMessageWithTitle:title description:description type:type duration:duration statusBarHidden:statusBarHidden statusBarStyle:UIStatusBarStyleDefault callback:callback];
+    [self showMessageWithTitle:title description:description type:type duration:[TWMessageBarManager durationForMessageType:type] statusBarHidden:statusBarHidden statusBarStyle:UIStatusBarStyleDefault showProgress:(BOOL)progress callback:callback];
+}
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden showProgress:(BOOL)progress callback:(void (^)())callback
+{
+    [self showMessageWithTitle:title description:description type:type duration:duration statusBarHidden:statusBarHidden statusBarStyle:UIStatusBarStyleDefault showProgress:progress callback:callback];
 }
 
 #pragma mark - Master Presentation
 
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden statusBarStyle:(UIStatusBarStyle)statusBarStyle showProgress:(BOOL)progress callback:(void (^)())callback
 {
-    TWMessageView *messageView = [[TWMessageView alloc] initWithTitle:title description:description type:type];
+    TWMessageView *messageView = [[TWMessageView alloc] initWithTitle:title description:description type:type showProgress:progress];
     messageView.delegate = self;
     
     messageView.callbacks = callback ? [NSArray arrayWithObject:callback] : [NSArray array];
@@ -277,6 +293,34 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
     [self hideAllAnimated:NO];
 }
 
+- (void)setProgress:(float)progress animated:(BOOL)animated
+{
+    for (UIView *subview in [[self messageWindowView] subviews])
+    {
+        if ([subview isKindOfClass:[TWMessageView class]])
+        {
+            TWMessageView* mv = (TWMessageView*)subview;
+            if(mv.progressBar)
+            {
+                if (animated)
+                {
+                    [PRTween tween:mv.progressBar property:@"progress" from:mv.progressBar.progress to:progress duration:0.5 delay:0 timingFunction:NULL updateBlock:nil completeBlock:^(BOOL finished) {
+                        if(progress >=1.0)
+                        {
+                            mv.tweenOperation = nil;
+                            [self performBlock:^{
+                                [self hideAllAnimated:YES];
+                            } afterDelay:0.5];
+                        }
+                    }];
+                }
+                else
+                    mv.progressBar.progress = progress;
+            }
+        }
+    }
+}
+
 #pragma mark - Helpers
 
 - (void)showNextMessage
@@ -291,6 +335,13 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
         messageView.hidden = NO;
         [messageView setNeedsDisplay];
         
+        if(messageView.progressBar)
+        {
+            messageView.progressBar.frame = CGRectMake(0, messageView.frame.size.height, messageView.frame.size.width, 74);
+            [messageView addSubview:messageView.progressBar];
+            [messageView bringSubviewToFront:messageView.progressBar];
+        }
+        
         UITapGestureRecognizer *gest = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(itemSelected:)];
         [messageView addGestureRecognizer:gest];
         
@@ -303,8 +354,10 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
             [UIView animateWithDuration:kTWMessageBarManagerDismissAnimationDuration animations:^{
                 [messageView setFrame:CGRectMake(messageView.frame.origin.x, messageView.frame.origin.y + [messageView height], [messageView width], [messageView height])]; // slide down
             }];
-            [self performSelector:@selector(itemSelected:) withObject:messageView afterDelay:messageView.duration];
-            
+            if(messageView.duration > 0)
+            {
+                [self performSelector:@selector(itemSelected:) withObject:messageView afterDelay:messageView.duration];
+            }
             [self generateAccessibleElementWithTitle:messageView.titleString description:messageView.descriptionString];
         }
     }
@@ -461,6 +514,11 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
 
 - (id)initWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type
 {
+    return [self initWithTitle:title description:description type:type showProgress:NO];
+}
+
+- (id)initWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type showProgress:(BOOL)progress
+{
     self = [super initWithFrame:CGRectZero];
     if (self)
     {
@@ -475,7 +533,18 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
         _hasCallback = NO;
         _hit = NO;
         
+        if(progress)
+        {
+            self.progressBar = [[ASProgressPopUpView alloc]initWithProgressViewStyle:UIProgressViewStyleDefault];
+            
+            self.progressBar.font = [UIFont fontWithName:@"Futura-CondensedExtraBold" size:26];
+            self.progressBar.popUpViewAnimatedColors = @[[UIColor redColor], [UIColor orangeColor], [UIColor greenColor]];
+            self.progressBar.alwaysShowPopUpView = NO;
+            self.clipsToBounds = NO;
+        }
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didChangeDeviceOrientation:) name:UIDeviceOrientationDidChangeNotification object:nil];
+        
     }
     return self;
 }
@@ -569,18 +638,12 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
         else
         {
             [kTWMessageViewTitleColor set];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [self.titleString drawInRect:CGRectMake(xOffset, yOffset, titleLabelSize.width, titleLabelSize.height) withFont:kTWMessageViewTitleFont lineBreakMode:NSLineBreakByTruncatingTail alignment:NSTextAlignmentLeft];
-#pragma clang diagnostic pop
             
             yOffset += titleLabelSize.height;
             
             [kTWMessageViewDescriptionColor set];
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
             [self.descriptionString drawInRect:CGRectMake(xOffset, yOffset, descriptionLabelSize.width, descriptionLabelSize.height) withFont:kTWMessageViewDescriptionFont lineBreakMode:NSLineBreakByTruncatingTail alignment:NSTextAlignmentLeft];
-#pragma clang diagnostic pop
         }
     }
 }
@@ -624,10 +687,7 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
     }
     else
     {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         titleLabelSize = [_titleString sizeWithFont:kTWMessageViewTitleFont constrainedToSize:boundedSize lineBreakMode:NSLineBreakByTruncatingTail];
-#pragma clang diagnostic pop
     }
     
     return CGSizeMake(ceilf(titleLabelSize.width), ceilf(titleLabelSize.height));
@@ -648,10 +708,7 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
     }
     else
     {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         descriptionLabelSize = [_descriptionString sizeWithFont:kTWMessageViewDescriptionFont constrainedToSize:boundedSize lineBreakMode:NSLineBreakByTruncatingTail];
-#pragma clang diagnostic pop
     }
     
     return CGSizeMake(ceilf(descriptionLabelSize.width), ceilf(descriptionLabelSize.height));
@@ -718,14 +775,16 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
     switch (type)
     {
         case TWMessageBarMessageTypeError:
-            backgroundColor = kTWDefaultMessageBarStyleSheetErrorBackgroundColor;
+            backgroundColor = [UIColor flatRedColor];
             break;
         case TWMessageBarMessageTypeSuccess:
-            backgroundColor = kTWDefaultMessageBarStyleSheetSuccessBackgroundColor;
+            backgroundColor = [UIColor colorWithRed:170./255. green:199./255. blue:102./255. alpha:1.0];
             break;
         case TWMessageBarMessageTypeInfo:
-            backgroundColor = kTWDefaultMessageBarStyleSheetInfoBackgroundColor;
+            backgroundColor = [UIColor colorWithRed:62./255. green:204./255. blue:255./255. alpha:1.0];
             break;
+        case TWMessageBarMessageTypeErrorInfo:
+            backgroundColor = [UIColor colorWithRed:255./255. green:137./255. blue:62./255. alpha:1.0];
         default:
             break;
     }
@@ -766,6 +825,8 @@ static UIColor *kTWDefaultMessageBarStyleSheetInfoStrokeColor = nil;
         case TWMessageBarMessageTypeInfo:
             iconImage = [UIImage imageNamed:kTWMessageBarStyleSheetImageIconInfo];
             break;
+        case TWMessageBarMessageTypeErrorInfo:
+            iconImage = [UIImage imageNamed:@"disconnected-128"];
         default:
             break;
     }

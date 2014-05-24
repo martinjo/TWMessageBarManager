@@ -6,12 +6,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ASProgressPopUpView.h"
+#import "UIColor+MLPFlatColors.h"
+#import "PRTween.h"
+#import "PerformBlockAfterDelayExtension.h"
 
 /**
  *  Three base message bar types. Their look & feel is defined within the MessageBarStyleSheet.
  */
 typedef enum {
     TWMessageBarMessageTypeError,
+    TWMessageBarMessageTypeErrorInfo,
     TWMessageBarMessageTypeSuccess,
     TWMessageBarMessageTypeInfo
 } TWMessageBarMessageType;
@@ -79,6 +84,9 @@ typedef enum {
  */
 - (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type;
 
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type showProgress:(BOOL)progress;
+
 /**
  *  Shows a message with the supplied title, description, type & callback block.
  *
@@ -97,7 +105,8 @@ typedef enum {
  *  @param type         Type dictates color, stroke and icon shown in the message view.
  *  @param duration     Default duration is 3 seconds, this can be overridden by supplying an optional duration parameter.
  */
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration;
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration showProgress:(BOOL)progress	;
 
 /**
  *  Shows a message with the supplied title, description, type, duration and callback block.
@@ -108,7 +117,9 @@ typedef enum {
  *  @param duration     Default duration is 3 seconds, this can be overridden by supplying an optional duration parameter.
  *  @param callback     Callback block to be executed if a message is tapped.
  */
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration callback:(void (^)())callback;
+//- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration callback:(void (^)())callback;
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration showProgress:(BOOL)progress callback:(void (^)())callback;
 
 /**
  *  Shows a message with the supplied title, description, type, status bar style and callback block.
@@ -119,7 +130,9 @@ typedef enum {
  *  @param statusBarStyle   Applied during the presentation of the message. If not supplied, style will default to UIStatusBarStyleDefault.
  *  @param callback         Callback block to be executed if a message is tapped.
  */
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback;
+//- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback;
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarStyle:(UIStatusBarStyle)statusBarStyle showProgress:(BOOL)progress callback:(void (^)())callback;
 
 /**
  *  Shows a message with the supplied title, description, type, duration, status bar style and callback block.
@@ -131,7 +144,8 @@ typedef enum {
  *  @param statusBarStyle   Applied during the presentation of the message. If not supplied, style will default to UIStatusBarStyleDefault.
  *  @param callback         Callback block to be executed if a message is tapped.
  */
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarStyle:(UIStatusBarStyle)statusBarStyle callback:(void (^)())callback;
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarStyle:(UIStatusBarStyle)statusBarStyle showProgress:(BOOL)progress callback:(void (^)())callback;
 
 /**
  *  Shows a message with the supplied title, description, type, status bar hidden toggle and callback block.
@@ -142,7 +156,8 @@ typedef enum {
  *  @param statusBarHidden  Status bars are shown by default. To hide it during the presentation of a message, set to NO.
  *  @param callback         Callback block to be executed if a message is tapped.
  */
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarHidden:(BOOL)statusBarHidden callback:(void (^)())callback;
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type statusBarHidden:(BOOL)statusBarHidden showProgress:(BOOL)progress callback:(void (^)())callback;
 
 /**
  *  Shows a message with the supplied title, description, type, duration, status bar hidden toggle and callback block.
@@ -154,7 +169,9 @@ typedef enum {
  *  @param statusBarHidden  Status bars are shown by default. To hide it during the presentation of a message, set to NO.
  *  @param callback         Callback block to be executed if a message is tapped.
  */
-- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden callback:(void (^)())callback;
+
+
+- (void)showMessageWithTitle:(NSString *)title description:(NSString *)description type:(TWMessageBarMessageType)type duration:(CGFloat)duration statusBarHidden:(BOOL)statusBarHidden showProgress:(BOOL)progress callback:(void (^)())callback;
 
 /**
  *  Hides the topmost message and removes all remaining messages in the queue.
@@ -163,7 +180,7 @@ typedef enum {
  */
 - (void)hideAllAnimated:(BOOL)animated;
 - (void)hideAll; // non-animated
-
+- (void)setProgress:(float)progress animated:(BOOL)animated;
 @end
 
 @interface UIDevice (Additions)
